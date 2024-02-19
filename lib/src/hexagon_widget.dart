@@ -29,41 +29,15 @@ class HexagonWidget extends StatelessWidget {
     this.height,
     this.color,
     this.child,
+    this.relief = false,
     this.padding = 0.0,
     this.cornerRadius = 0.0,
     this.elevation = 0,
     this.inBounds = true,
     required this.type,
-  })  : assert(width != null || height != null),
+  })
+      : assert(width != null || height != null),
         assert(elevation >= 0),
-        super(key: key);
-
-  /// Preferably provide one dimension ([width] or [height]) and the other will be calculated accordingly to hexagon aspect ratio
-  ///
-  /// [elevation] - Mustn't be negative. Default = 0
-  ///
-  /// [padding] - Mustn't be negative.
-  ///
-  /// [color] - Color used to fill hexagon. Use transparency with 0 elevation
-  ///
-  /// [cornerRadius] - Border radius of hexagon corners. Values <= 0 have no effect.
-  ///
-  /// [inBounds] - Set to false if you want to overlap hexagon corners outside it's space.
-  ///
-  /// [child] - You content. Keep in mind that it will be clipped.
-  HexagonWidget.flat({
-    Key? key,
-    this.width,
-    this.height,
-    this.color,
-    this.child,
-    this.padding = 0.0,
-    this.elevation = 0,
-    this.cornerRadius = 0.0,
-    this.inBounds = true,
-  })  : assert(width != null || height != null),
-        assert(elevation >= 0),
-        this.type = HexagonType.FLAT,
         super(key: key);
 
   /// Preferably provide one dimension ([width] or [height]) and the other will be calculated accordingly to hexagon aspect ratio
@@ -85,13 +59,46 @@ class HexagonWidget extends StatelessWidget {
     this.height,
     this.color,
     this.child,
+    this.relief = false,
     this.padding = 0.0,
     this.elevation = 0,
     this.cornerRadius = 0.0,
     this.inBounds = true,
-  })  : assert(width != null || height != null),
+  })
+      : assert(width != null || height != null),
         assert(elevation >= 0),
         this.type = HexagonType.POINTY,
+        super(key: key);
+
+  ///
+
+  /// Preferably provide one dimension ([width] or [height]) and the other will be calculated accordingly to hexagon aspect ratio
+  /// [elevation] - Mustn't be negative. Default = 0
+  ///
+  /// [padding] - Mustn't be negative.
+  ///
+  /// [color] - Color used to fill hexagon. Use transparency with 0 elevation
+  ///
+  /// [cornerRadius] - Border radius of hexagon corners. Values <= 0 have no effect.
+  ///
+  /// [inBounds] - Set to false if you want to overlap hexagon corners outside it's space.
+  ///
+  /// [child] - You content. Keep in mind that it will be clipped.
+  HexagonWidget.flat({
+    Key? key,
+    this.width,
+    this.height,
+    this.color,
+    this.child,
+    this.relief = false,
+    this.padding = 0.0,
+    this.elevation = 0,
+    this.cornerRadius = 0.0,
+    this.inBounds = true,
+  })
+      : assert(width != null || height != null),
+        assert(elevation >= 0),
+        this.type = HexagonType.FLAT,
         super(key: key);
 
   final HexagonType type;
@@ -99,6 +106,7 @@ class HexagonWidget extends StatelessWidget {
   final double? height;
   final double elevation;
   final bool inBounds;
+  final bool relief;
   final Widget? child;
   final Color? color;
   final double padding;
@@ -142,26 +150,30 @@ class HexagonWidget extends StatelessWidget {
         padding: EdgeInsets.all(padding),
         width: innerSize.width,
         height: innerSize.height,
-        child: CustomPaint(
-          painter: HexagonPainter(
-            pathBuilder,
-            color: color,
-            elevation: elevation,
-          ),
-          child: ClipPath(
-            clipper: HexagonClipper(pathBuilder),
-            child: OverflowBox(
-              alignment: Alignment.center,
-              maxHeight: contentSize.height,
-              maxWidth: contentSize.width,
-              child: Align(
+        child:
+        ClipPath(
+          clipper: HexagonClipper(pathBuilder),
+          child: CustomPaint(
+            painter: HexagonPainter(
+              pathBuilder,
+              color: color,
+              relief: relief,
+              elevation: elevation,
+            ),
+            child: ClipPath(
+              clipper: HexagonClipper(pathBuilder),
+              child: OverflowBox(
                 alignment: Alignment.center,
-                child: child,
+                maxHeight: contentSize.height,
+                maxWidth: contentSize.width,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: child,
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        ),),
     );
   }
 }
@@ -188,7 +200,8 @@ class HexagonWidgetBuilder {
     this.padding,
     this.cornerRadius,
     this.child,
-  })  : this.elevation = 0,
+  })
+      : this.elevation = 0,
         this.color = Colors.transparent;
 
   HexagonWidget build({
